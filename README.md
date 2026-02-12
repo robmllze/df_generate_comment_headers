@@ -49,6 +49,7 @@ This tool automatically adds standardized comment headers to your source files, 
 
 4. Open a terminal at a desired folder then run `--headers -t path/to/header_template.md` in the terminal. This will modify source files in the folder and add the header comments.
 
+
 <!-- END _README_CONTENT -->
 
 ---
