@@ -11,31 +11,29 @@
 ## ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓
 ##.title~
 
-name: generate_header_comments
-homepage: https://dev-cetera.com/
-funding:
-- https://www.buymeacoffee.com/dev_cetera
-- https://www.patreon.com/c/robelator
-- https://github.com/sponsors/robelator
-- https://www.patreon.com/c/robelator
-- https://github.com/sponsors/robelator
-- https://www.buymeacoffee.com/dev_cetera
+# MacOS.
+**/.DS_Store
 
+# Dart & Flutter.
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.metadata
+**/.pub-cache/
+**/.pub/
+**/build/
+**/pubspec_overrides.yaml
+**/pubspec.lock
+**/custom_lint.log
 
-publish_to: none
-## -----------------------------------------------------------------------------
+# GitHub.
+**/.github/.git
 
-environment:
-  sdk: ">=3.5.0 <4.0.0"
+# Firebase.
+**/.firebase
+**/firebase-debug.log
 
-## -----------------------------------------------------------------------------
-
-dependencies:
-  df_generate_header_comments:
-    path: ../
-
-## -----------------------------------------------------------------------------
-
-dev_dependencies:
-  lints: ^6.0.0
-
+# Android
+/android/app/debug
+/android/app/profile
+/android/app/release

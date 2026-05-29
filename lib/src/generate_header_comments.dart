@@ -91,7 +91,8 @@ Future<void> generateHeaderComments(
   String templateData;
   Log.printWhite('Reading template at: $template...');
 
-  final result = (await MdTemplateUtility.i.readTemplateFromPathOrUrl(template).value);
+  final result =
+      (await MdTemplateUtility.i.readTemplateFromPathOrUrl(template).value);
 
   if (result.isErr()) {
     Log.printRed(' Failed to read template!');
@@ -120,26 +121,47 @@ Future<void> generateHeaderComments(
 // ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 
 Future<void> _generateForFile(String filePath, String template) async {
-  final commentStarter = langFileCommentStarters[p.extension(filePath).toLowerCase()] ?? '//';
+  final commentStarter =
+      langFileCommentStarters[p.extension(filePath).toLowerCase()] ?? '//';
   var templateLines = template.split('\n');
-  final sourceLines = (await FileSystemUtility.i.readLocalFileAsLinesOrNull(filePath)) ?? [];
-  if (sourceLines.isNotEmpty) {
-    // Replace leading '//' in all template lines with the comment starter
-    templateLines = templateLines.map((line) {
-      if (line.trim().startsWith('//')) {
-        return commentStarter + line.substring(2); // Replace leading // only
-      }
-      return line; // Return the line unchanged if it doesn't start with //
-    }).toList();
+  final sourceLines =
+      (await FileSystemUtility.i.readLocalFileAsLinesOrNull(filePath)) ?? [];
+  if (sourceLines.isEmpty) return;
 
-    for (var n = 0; n < sourceLines.length; n++) {
-      final line = sourceLines[n].trim();
-      if (line.isEmpty || !line.startsWith(commentStarter)) {
-        final withoutHeader = sourceLines.sublist(n).join('\n');
-        final withHeader = '${templateLines.join('\n')}\n\n${withoutHeader.trimLeft()}\n';
-        await FileSystemUtility.i.writeLocalFile(filePath, withHeader);
-        break;
-      }
+  // Replace the template's leading `//` with the language's comment starter.
+  // The old code did `line.substring(2)` which assumes `//` is at byte 0 —
+  // but it tested `line.trim().startsWith('//')`, so a template line with
+  // leading whitespace would have its FIRST two bytes stripped instead of
+  // the `//`. Use a positional replacement on the actually-found marker.
+  templateLines = templateLines.map((line) {
+    final idx = line.indexOf('//');
+    if (idx == -1) return line;
+    // Only rewrite if the comment is at the line's "logical start" (i.e.,
+    // preceded by whitespace only).
+    if (line.substring(0, idx).trim().isNotEmpty) return line;
+    return line.substring(0, idx) + commentStarter + line.substring(idx + 2);
+  }).toList();
+
+  // Preserve a leading shebang (e.g. `#!/usr/bin/env python`) when the
+  // language is one where the shebang must remain the very first line for
+  // the interpreter to be honoured.
+  var startIndex = 0;
+  String? shebangLine;
+  if (sourceLines.first.startsWith('#!')) {
+    shebangLine = sourceLines.first;
+    startIndex = 1;
+  }
+
+  for (var n = startIndex; n < sourceLines.length; n++) {
+    final line = sourceLines[n].trim();
+    if (line.isEmpty || !line.startsWith(commentStarter)) {
+      final withoutHeader = sourceLines.sublist(n).join('\n');
+      final headerBlock = templateLines.join('\n');
+      final withHeader = shebangLine == null
+          ? '$headerBlock\n\n${withoutHeader.trimLeft()}\n'
+          : '$shebangLine\n$headerBlock\n\n${withoutHeader.trimLeft()}\n';
+      await FileSystemUtility.i.writeLocalFile(filePath, withHeader);
+      break;
     }
   }
 }
