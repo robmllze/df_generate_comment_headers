@@ -142,8 +142,10 @@ void main() {}
     final originalCwd = Directory.current;
     Directory.current = tmp;
     try {
-      await generateHeaderComments(['-i', '.'],
-          defaultTemplate: pyTemplate.path,);
+      await generateHeaderComments(
+        ['-i', '.'],
+        defaultTemplate: pyTemplate.path,
+      );
     } finally {
       Directory.current = originalCwd;
     }
