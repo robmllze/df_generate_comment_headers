@@ -19,7 +19,7 @@ funding:
   - https://www.patreon.com/c/robelator
   - https://github.com/sponsors/robelator
 description: A tool to generate header comments for your source files.
-version: 0.7.0
+version: 0.7.1
 topics:
   - source-gen
   - build-runner
@@ -39,7 +39,7 @@ dependencies:
   args: ^2.7.0
 
   df_config: ^0.8.0
-  df_gen_core: ^0.8.0
+  df_gen_core: ^0.8.1
   df_log: ^0.5.1
 
 ## -----------------------------------------------------------------------------
